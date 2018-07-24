@@ -46,11 +46,11 @@ exports.registerNewUserOnDatabase = functions.auth.user().onCreate(event => {
     return Promise.all(promises)
 });
 
-exports.sendNewMessageNotification = functions.database.ref('chat/{messageId}').onCreate(chatSnap => {
+exports.sendNewMessageNotification = functions.database.ref('chat/{messageId}').onCreate((chatSnap, context) => {
     const message = chatSnap.child('message').val();
 
     return message ? admin.database()
-        .ref('users').child(chatSnap.child('userId').val())
+        .ref(`users/${context.auth.uid}`)
         .once('value', userSnap => {
             const userName = userSnap.child('name').val();
 
